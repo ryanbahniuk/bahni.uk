@@ -69,7 +69,7 @@
 /* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__.p + "template.html";
+	module.exports = __webpack_require__.p + "index.html";
 
 /***/ }),
 /* 3 */
