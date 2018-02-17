@@ -4,6 +4,22 @@ import Hex
 import Color exposing (Color, rgba, linear, toRgb)
 import String exposing (padRight)
 
+white : Color
+white = 
+  rgba 255 255 255 1.0
+
+whiteHex : String
+whiteHex =
+  toHex white
+
+black : Color
+black = 
+  rgba 0 0 0 1.0
+
+blackHex : String
+blackHex =
+  toHex black
+
 green : Color
 green = 
   rgba 1 255 137 1.0

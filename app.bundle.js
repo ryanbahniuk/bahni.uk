@@ -8823,6 +8823,10 @@
 	var _ryanbahniuk$bahniuk$Colors$purpleHex = _ryanbahniuk$bahniuk$Colors$toHex(_ryanbahniuk$bahniuk$Colors$purple);
 	var _ryanbahniuk$bahniuk$Colors$green = A4(_elm_lang$core$Color$rgba, 1, 255, 137, 1.0);
 	var _ryanbahniuk$bahniuk$Colors$greenHex = _ryanbahniuk$bahniuk$Colors$toHex(_ryanbahniuk$bahniuk$Colors$green);
+	var _ryanbahniuk$bahniuk$Colors$black = A4(_elm_lang$core$Color$rgba, 0, 0, 0, 1.0);
+	var _ryanbahniuk$bahniuk$Colors$blackHex = _ryanbahniuk$bahniuk$Colors$toHex(_ryanbahniuk$bahniuk$Colors$black);
+	var _ryanbahniuk$bahniuk$Colors$white = A4(_elm_lang$core$Color$rgba, 255, 255, 255, 1.0);
+	var _ryanbahniuk$bahniuk$Colors$whiteHex = _ryanbahniuk$bahniuk$Colors$toHex(_ryanbahniuk$bahniuk$Colors$white);
 
 	var _ryanbahniuk$bahniuk$Models$initialModel = {
 		polygons: {ctor: '[]'},
@@ -9348,21 +9352,25 @@
 				_0: _elm_lang$svg$Svg_Attributes$fill('url(#gradient)'),
 				_1: {
 					ctor: '::',
-					_0: _ryanbahniuk$bahniuk$View$polylineStroke(vertices),
+					_0: _elm_lang$svg$Svg_Attributes$mask('url(#knockout-text)'),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$svg$Svg_Attributes$class('line'),
+						_0: _ryanbahniuk$bahniuk$View$polylineStroke(vertices),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$svg$Svg_Attributes$points(
-								_ryanbahniuk$bahniuk$View$polyPoints(
-									A2(
-										_elm_lang$core$List$map,
-										function (_) {
-											return _.coordinates;
-										},
-										vertices))),
-							_1: {ctor: '[]'}
+							_0: _elm_lang$svg$Svg_Attributes$class('line'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$points(
+									_ryanbahniuk$bahniuk$View$polyPoints(
+										A2(
+											_elm_lang$core$List$map,
+											function (_) {
+												return _.coordinates;
+											},
+											vertices))),
+								_1: {ctor: '[]'}
+							}
 						}
 					}
 				}
@@ -9502,6 +9510,201 @@
 	var _ryanbahniuk$bahniuk$View$clickAction = function (model) {
 		return _ryanbahniuk$bahniuk$Helpers$noneInFlight(model.polygons) ? _ryanbahniuk$bahniuk$Events$onClick(_ryanbahniuk$bahniuk$Messages$Add) : _ryanbahniuk$bahniuk$Events$onStopPropClick(_ryanbahniuk$bahniuk$Messages$Noop);
 	};
+	var _ryanbahniuk$bahniuk$View$creditLine = 'this site (and other cool things) can be found on my github';
+	var _ryanbahniuk$bahniuk$View$introTextFourthLine = 'and once upon a time at notre dame.';
+	var _ryanbahniuk$bahniuk$View$introTextThirdLine = 'formerly at wealthfront,';
+	var _ryanbahniuk$bahniuk$View$introTextSecondLine = 'i\'m a developer at braintree,';
+	var _ryanbahniuk$bahniuk$View$introTextFirstLine = 'hi, i am ryan bahniuk.';
+	var _ryanbahniuk$bahniuk$View$maskText = A2(
+		_elm_lang$svg$Svg$mask,
+		{
+			ctor: '::',
+			_0: _elm_lang$svg$Svg_Attributes$id('knockout-text'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$svg$Svg$rect,
+				{
+					ctor: '::',
+					_0: _elm_lang$svg$Svg_Attributes$width('100%'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$height('100%'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$fill(_ryanbahniuk$bahniuk$Colors$whiteHex),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$x('0'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$y('0'),
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					}
+				},
+				{ctor: '[]'}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$svg$Svg$text_,
+					{
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$class('intro'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$x('50%'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$y('300'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$fill(_ryanbahniuk$bahniuk$Colors$blackHex),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$svg$Svg_Attributes$textAnchor('middle'),
+										_1: {ctor: '[]'}
+									}
+								}
+							}
+						}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$svg$Svg$text(_ryanbahniuk$bahniuk$View$introTextFirstLine),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$svg$Svg$text_,
+						{
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$class('intro'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$x('50%'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$y('350'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$svg$Svg_Attributes$fill(_ryanbahniuk$bahniuk$Colors$blackHex),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$svg$Svg_Attributes$textAnchor('middle'),
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$svg$Svg$text(_ryanbahniuk$bahniuk$View$introTextSecondLine),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$svg$Svg$text_,
+							{
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$class('intro'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$x('50%'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$svg$Svg_Attributes$y('400'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$svg$Svg_Attributes$fill(_ryanbahniuk$bahniuk$Colors$blackHex),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$svg$Svg_Attributes$textAnchor('middle'),
+												_1: {ctor: '[]'}
+											}
+										}
+									}
+								}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$svg$Svg$text(_ryanbahniuk$bahniuk$View$introTextThirdLine),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$svg$Svg$text_,
+								{
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$class('intro'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$svg$Svg_Attributes$x('50%'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$svg$Svg_Attributes$y('450'),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$svg$Svg_Attributes$fill(_ryanbahniuk$bahniuk$Colors$blackHex),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$svg$Svg_Attributes$textAnchor('middle'),
+													_1: {ctor: '[]'}
+												}
+											}
+										}
+									}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$svg$Svg$text(_ryanbahniuk$bahniuk$View$introTextFourthLine),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$svg$Svg$text_,
+									{
+										ctor: '::',
+										_0: _elm_lang$svg$Svg_Attributes$class('credit'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$svg$Svg_Attributes$x('50%'),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$svg$Svg_Attributes$y('700'),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$svg$Svg_Attributes$fill(_ryanbahniuk$bahniuk$Colors$blackHex),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$svg$Svg_Attributes$textAnchor('middle'),
+														_1: {ctor: '[]'}
+													}
+												}
+											}
+										}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$svg$Svg$text(_ryanbahniuk$bahniuk$View$creditLine),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}
+			}
+		});
 	var _ryanbahniuk$bahniuk$View$view = function (model) {
 		return A2(
 			_elm_lang$svg$Svg$svg,
@@ -9541,7 +9744,11 @@
 							_elm_lang$svg$Svg$g,
 							{ctor: '[]'},
 							A2(_elm_lang$core$List$map, _ryanbahniuk$bahniuk$View$polygonCircleView, model.polygons)),
-						_1: {ctor: '[]'}
+						_1: {
+							ctor: '::',
+							_0: _ryanbahniuk$bahniuk$View$maskText,
+							_1: {ctor: '[]'}
+						}
 					}
 				}
 			});
