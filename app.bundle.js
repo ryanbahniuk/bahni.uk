@@ -8828,11 +8828,6 @@
 	var _ryanbahniuk$bahniuk$Colors$white = A4(_elm_lang$core$Color$rgba, 255, 255, 255, 1.0);
 	var _ryanbahniuk$bahniuk$Colors$whiteHex = _ryanbahniuk$bahniuk$Colors$toHex(_ryanbahniuk$bahniuk$Colors$white);
 
-	var _ryanbahniuk$bahniuk$Models$initialModel = {
-		polygons: {ctor: '[]'},
-		interactionCounter: 0,
-		selectedPolygonId: _elm_lang$core$Maybe$Nothing
-	};
 	var _ryanbahniuk$bahniuk$Models$Polygon = F2(
 		function (a, b) {
 			return {id: a, vertices: b};
@@ -8847,6 +8842,17 @@
 		function (a, b) {
 			return {x: a, y: b};
 		});
+	var _ryanbahniuk$bahniuk$Models$Cursor = function (a) {
+		return {coordinates: a};
+	};
+	var _ryanbahniuk$bahniuk$Models$initialCursor = _ryanbahniuk$bahniuk$Models$Cursor(
+		A2(_ryanbahniuk$bahniuk$Models$Coordinates, 0, 0));
+	var _ryanbahniuk$bahniuk$Models$initialModel = {
+		polygons: {ctor: '[]'},
+		cursor: _ryanbahniuk$bahniuk$Models$initialCursor,
+		interactionCounter: 0,
+		selectedPolygonId: _elm_lang$core$Maybe$Nothing
+	};
 	var _ryanbahniuk$bahniuk$Models$Vertex = F3(
 		function (a, b, c) {
 			return {id: a, coordinates: b, inFlight: c};
@@ -8866,9 +8872,9 @@
 					_1: {ctor: '[]'}
 				});
 		});
-	var _ryanbahniuk$bahniuk$Models$Model = F3(
-		function (a, b, c) {
-			return {polygons: a, interactionCounter: b, selectedPolygonId: c};
+	var _ryanbahniuk$bahniuk$Models$Model = F4(
+		function (a, b, c, d) {
+			return {polygons: a, cursor: b, interactionCounter: c, selectedPolygonId: d};
 		});
 
 	var _ryanbahniuk$bahniuk$Decoders$coordinateDecoder = A3(
@@ -8916,6 +8922,14 @@
 			A2(_elm_lang$core$Json_Decode$map, message, _ryanbahniuk$bahniuk$Decoders$coordinateDecoder));
 	};
 
+	var _ryanbahniuk$bahniuk$Helpers$flattenVertices = function (polygons) {
+		return A2(
+			_elm_lang$core$List$concatMap,
+			function (x) {
+				return x.vertices;
+			},
+			polygons);
+	};
 	var _ryanbahniuk$bahniuk$Helpers$isInFlight = function (vertex) {
 		return vertex.inFlight;
 	};
@@ -9160,23 +9174,25 @@
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				case 'Track':
+					var _p4 = _p1._0;
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								polygons: A2(_ryanbahniuk$bahniuk$Update$updateInFlightVertex, model.polygons, _p1._0)
+								polygons: A2(_ryanbahniuk$bahniuk$Update$updateInFlightVertex, model.polygons, _p4),
+								cursor: _ryanbahniuk$bahniuk$Models$Cursor(_p4)
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				default:
-					var _p6 = _p1._0;
-					if (_elm_lang$core$Native_Utils.eq(_p6, 8)) {
-						var _p4 = A2(_ryanbahniuk$bahniuk$Update$selectedPolygon, model.polygons, model.selectedPolygonId);
-						if (_p4.ctor === 'Just') {
-							var _p5 = _p4._0;
-							return _ryanbahniuk$bahniuk$Helpers$anyVertexInFlight(_p5.vertices) ? (_elm_lang$core$Native_Utils.eq(
-								_elm_lang$core$List$length(_p5.vertices),
+					var _p7 = _p1._0;
+					if (_elm_lang$core$Native_Utils.eq(_p7, 8)) {
+						var _p5 = A2(_ryanbahniuk$bahniuk$Update$selectedPolygon, model.polygons, model.selectedPolygonId);
+						if (_p5.ctor === 'Just') {
+							var _p6 = _p5._0;
+							return _ryanbahniuk$bahniuk$Helpers$anyVertexInFlight(_p6.vertices) ? (_elm_lang$core$Native_Utils.eq(
+								_elm_lang$core$List$length(_p6.vertices),
 								1) ? {
 								ctor: '_Tuple2',
 								_0: _elm_lang$core$Native_Utils.update(
@@ -9199,7 +9215,7 @@
 							return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 						}
 					} else {
-						if (_elm_lang$core$Native_Utils.eq(_p6, 13)) {
+						if (_elm_lang$core$Native_Utils.eq(_p7, 13)) {
 							var newPolygon = _ryanbahniuk$bahniuk$Models$initialEmptyPolygon(model.interactionCounter);
 							return {
 								ctor: '_Tuple2',
@@ -9510,6 +9526,108 @@
 	var _ryanbahniuk$bahniuk$View$clickAction = function (model) {
 		return _ryanbahniuk$bahniuk$Helpers$noneInFlight(model.polygons) ? _ryanbahniuk$bahniuk$Events$onClick(_ryanbahniuk$bahniuk$Messages$Add) : _ryanbahniuk$bahniuk$Events$onStopPropClick(_ryanbahniuk$bahniuk$Messages$Noop);
 	};
+	var _ryanbahniuk$bahniuk$View$cursorView = function (cursor) {
+		return A2(
+			_elm_lang$svg$Svg$g,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$svg$Svg$circle,
+					{
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$cx(
+							_elm_lang$core$Basics$toString(cursor.coordinates.x)),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$cy(
+								_elm_lang$core$Basics$toString(cursor.coordinates.y)),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$r('10'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$class('cursor-third-circle'),
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					},
+					{ctor: '[]'}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$svg$Svg$circle,
+						{
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$cx(
+								_elm_lang$core$Basics$toString(cursor.coordinates.x)),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$cy(
+									_elm_lang$core$Basics$toString(cursor.coordinates.y)),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$r('10'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$svg$Svg_Attributes$class('cursor-second-circle'),
+										_1: {ctor: '[]'}
+									}
+								}
+							}
+						},
+						{ctor: '[]'}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$svg$Svg$circle,
+							{
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$cx(
+									_elm_lang$core$Basics$toString(cursor.coordinates.x)),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$cy(
+										_elm_lang$core$Basics$toString(cursor.coordinates.y)),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$svg$Svg_Attributes$r('10'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$svg$Svg_Attributes$class('cursor-circle'),
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							},
+							{ctor: '[]'}),
+						_1: {ctor: '[]'}
+					}
+				}
+			});
+	};
+	var _ryanbahniuk$bahniuk$View$withinRangeY = F2(
+		function (cursor, vertex) {
+			return ((_elm_lang$core$Native_Utils.cmp(cursor.coordinates.y - vertex.coordinates.y, 10) < 1) && (_elm_lang$core$Native_Utils.cmp(cursor.coordinates.y - vertex.coordinates.y, 0) > -1)) || ((_elm_lang$core$Native_Utils.cmp(vertex.coordinates.y - cursor.coordinates.y, 10) < 1) && (_elm_lang$core$Native_Utils.cmp(vertex.coordinates.y - cursor.coordinates.y, 0) > -1));
+		});
+	var _ryanbahniuk$bahniuk$View$withinRangeX = F2(
+		function (cursor, vertex) {
+			return ((_elm_lang$core$Native_Utils.cmp(cursor.coordinates.x - vertex.coordinates.x, 10) < 1) && (_elm_lang$core$Native_Utils.cmp(cursor.coordinates.x - vertex.coordinates.x, 0) > -1)) || ((_elm_lang$core$Native_Utils.cmp(vertex.coordinates.x - cursor.coordinates.x, 10) < 1) && (_elm_lang$core$Native_Utils.cmp(vertex.coordinates.x - cursor.coordinates.x, 0) > -1));
+		});
+	var _ryanbahniuk$bahniuk$View$withinRange = F2(
+		function (cursor, vertex) {
+			return A2(_ryanbahniuk$bahniuk$View$withinRangeX, cursor, vertex) && A2(_ryanbahniuk$bahniuk$View$withinRangeY, cursor, vertex);
+		});
+	var _ryanbahniuk$bahniuk$View$shouldHideCursor = function (model) {
+		return A2(
+			_elm_lang$core$List$any,
+			_ryanbahniuk$bahniuk$View$withinRange(model.cursor),
+			_ryanbahniuk$bahniuk$Helpers$flattenVertices(model.polygons));
+	};
+	var _ryanbahniuk$bahniuk$View$maybeCursorView = function (model) {
+		return _ryanbahniuk$bahniuk$View$shouldHideCursor(model) ? _elm_lang$svg$Svg$text('') : _ryanbahniuk$bahniuk$View$cursorView(model.cursor);
+	};
 	var _ryanbahniuk$bahniuk$View$creditLine = 'this site (and other cool things) can be found on my github';
 	var _ryanbahniuk$bahniuk$View$introTextFourthLine = 'and once upon a time at notre dame.';
 	var _ryanbahniuk$bahniuk$View$introTextThirdLine = 'formerly at wealthfront,';
@@ -9746,8 +9864,12 @@
 							A2(_elm_lang$core$List$map, _ryanbahniuk$bahniuk$View$polygonCircleView, model.polygons)),
 						_1: {
 							ctor: '::',
-							_0: _ryanbahniuk$bahniuk$View$maskText,
-							_1: {ctor: '[]'}
+							_0: _ryanbahniuk$bahniuk$View$maybeCursorView(model),
+							_1: {
+								ctor: '::',
+								_0: _ryanbahniuk$bahniuk$View$maskText,
+								_1: {ctor: '[]'}
+							}
 						}
 					}
 				}

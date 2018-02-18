@@ -1,6 +1,6 @@
 module Helpers exposing (..)
 
-import List exposing (any, all, map)
+import List exposing (any, all, map, concatMap)
 import Models exposing (Polygon, Vertex)
 
 anyInFlight : List Polygon -> Bool
@@ -26,4 +26,8 @@ isInFlight vertex =
 isNotInFlight : Vertex -> Bool
 isNotInFlight vertex =
   not (isInFlight vertex)
+
+flattenVertices : List Polygon -> List Vertex
+flattenVertices polygons =
+  concatMap (\x -> x.vertices) polygons
 

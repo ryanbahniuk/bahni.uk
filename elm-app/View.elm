@@ -1,14 +1,14 @@
 module View exposing (..)
 
-import List exposing (map, length)
+import List exposing (map, length, any)
 import String exposing (join)
 import Svg exposing (Svg, svg, rect, g, defs, polyline, circle, linearGradient, stop, animate, text, text_)
 import Svg.Events exposing (onMouseUp)
 import Svg.Attributes exposing (cx, cy, r, x, y, x1, y1, x2, y2, width, height, offset, fill, id, class, attributeName, values, dur, repeatCount, points, stroke, textAnchor)
-import Models exposing (Model, Polygon, Vertex, Coordinates)
+import Models exposing (Model, Cursor, Polygon, Vertex, Coordinates)
 import Messages exposing (Msg(..))
 import Events exposing (onMouseMove, onClick, onStopPropClick, onStopPropMouseDown)
-import Helpers exposing (noneInFlight)
+import Helpers exposing (noneInFlight, flattenVertices)
 import Colors exposing (greenHex, purpleHex, turquoiseHex, whiteHex, blackHex)
 
 view : Model -> Svg Msg
@@ -17,6 +17,7 @@ view model =
   [ gradient
   , g [] (map polygonView model.polygons)
   , g [] (map polygonCircleView model.polygons)
+  , maybeCursorView model
   , maskText
   ]
 
@@ -50,6 +51,37 @@ introTextFourthLine =
 creditLine : String
 creditLine =
   "this site (and other cool things) can be found on my github"
+
+withinRangeX : Cursor -> Vertex -> Bool
+withinRangeX cursor vertex =
+  ((cursor.coordinates.x - vertex.coordinates.x <= 10) && (cursor.coordinates.x - vertex.coordinates.x >= 0)) || ((vertex.coordinates.x - cursor.coordinates.x <= 10) && (vertex.coordinates.x - cursor.coordinates.x >= 0))
+
+withinRangeY : Cursor -> Vertex -> Bool
+withinRangeY cursor vertex =
+  ((cursor.coordinates.y - vertex.coordinates.y <= 10) && (cursor.coordinates.y - vertex.coordinates.y >= 0)) || ((vertex.coordinates.y - cursor.coordinates.y <= 10) && (vertex.coordinates.y - cursor.coordinates.y >= 0))
+
+withinRange : Cursor -> Vertex -> Bool
+withinRange cursor vertex =
+  (withinRangeX cursor vertex) && (withinRangeY cursor vertex)
+
+shouldHideCursor : Model -> Bool
+shouldHideCursor model =
+  any (withinRange model.cursor) (flattenVertices model.polygons)
+
+maybeCursorView : Model -> Svg Msg
+maybeCursorView model =
+  if (shouldHideCursor model) then
+    text ""
+  else
+    cursorView model.cursor
+
+cursorView : Cursor -> Svg Msg
+cursorView cursor =
+  g []
+  [ circle [ cx (toString cursor.coordinates.x), cy (toString cursor.coordinates.y), r "10", class "cursor-third-circle" ] []
+  , circle [ cx (toString cursor.coordinates.x), cy (toString cursor.coordinates.y), r "10", class "cursor-second-circle" ] []
+  , circle [ cx (toString cursor.coordinates.x), cy (toString cursor.coordinates.y), r "10", class "cursor-circle" ] []
+  ]
 
 clickAction : Model -> Svg.Attribute Msg
 clickAction model =

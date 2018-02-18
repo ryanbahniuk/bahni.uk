@@ -1,10 +1,9 @@
 module Update exposing (..)
 
 import List exposing (head, map, append, filter, length)
-import Models exposing (Model, Polygon, Vertex, Coordinates, initialVertex, initialPolygon, initialEmptyPolygon)
+import Models exposing (Model, Cursor, Polygon, Vertex, Coordinates, initialVertex, initialPolygon, initialEmptyPolygon)
 import Messages exposing (Msg(..))
 import Helpers exposing (anyInFlight, isNotInFlight, anyVertexInFlight)
-import String exposing (join)
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -32,7 +31,7 @@ update msg model =
       ( { model | polygons = (lockAllVertices model.polygons) }, Cmd.none )
 
     Track coordinates ->
-      ( { model | polygons = (updateInFlightVertex model.polygons coordinates) }, Cmd.none )
+      ( { model | polygons = (updateInFlightVertex model.polygons coordinates), cursor = (Cursor coordinates) }, Cmd.none )
 
     KeyPressedResponse key ->
       if key == 8 then

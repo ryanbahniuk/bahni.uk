@@ -10,6 +10,10 @@ type alias Coordinates =
   , y : Int
   }
 
+type alias Cursor =
+  { coordinates : Coordinates
+  }
+
 type alias Vertex =
   { id : Int
   , coordinates : Coordinates
@@ -18,13 +22,19 @@ type alias Vertex =
 
 type alias Model =
   { polygons : List Polygon
+  , cursor : Cursor
   , interactionCounter : Int
   , selectedPolygonId : Maybe Int
   }
 
+initialCursor : Cursor
+initialCursor =
+  Cursor (Coordinates 0 0)
+
 initialModel : Model
 initialModel =
   { polygons = []
+  , cursor = initialCursor
   , interactionCounter = 0
   , selectedPolygonId = Nothing
   }
