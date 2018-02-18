@@ -11,7 +11,13 @@ html, body, #main, .wrapper {
   height: 100%;
   background-color: #fff;
   margin: 0;
+  overflow-y: hidden;
+  overflow-x: hidden;
   cursor: none;
+}
+
+.social-icon {
+  cursor: initial;
 }
 
 .intro {

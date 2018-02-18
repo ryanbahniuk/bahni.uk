@@ -12,6 +12,10 @@ whiteHex : String
 whiteHex =
   toHex white
 
+lightGreyHex : String
+lightGreyHex =
+  "#a8a8a8"
+
 black : Color
 black = 
   rgba 0 0 0 1.0

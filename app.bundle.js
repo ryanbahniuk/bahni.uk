@@ -8825,6 +8825,7 @@
 	var _ryanbahniuk$bahniuk$Colors$greenHex = _ryanbahniuk$bahniuk$Colors$toHex(_ryanbahniuk$bahniuk$Colors$green);
 	var _ryanbahniuk$bahniuk$Colors$black = A4(_elm_lang$core$Color$rgba, 0, 0, 0, 1.0);
 	var _ryanbahniuk$bahniuk$Colors$blackHex = _ryanbahniuk$bahniuk$Colors$toHex(_ryanbahniuk$bahniuk$Colors$black);
+	var _ryanbahniuk$bahniuk$Colors$lightGreyHex = '#a8a8a8';
 	var _ryanbahniuk$bahniuk$Colors$white = A4(_elm_lang$core$Color$rgba, 255, 255, 255, 1.0);
 	var _ryanbahniuk$bahniuk$Colors$whiteHex = _ryanbahniuk$bahniuk$Colors$toHex(_ryanbahniuk$bahniuk$Colors$white);
 
@@ -8846,12 +8847,14 @@
 		return {coordinates: a};
 	};
 	var _ryanbahniuk$bahniuk$Models$initialCursor = _ryanbahniuk$bahniuk$Models$Cursor(
-		A2(_ryanbahniuk$bahniuk$Models$Coordinates, 0, 0));
+		A2(_ryanbahniuk$bahniuk$Models$Coordinates, -50, -50));
 	var _ryanbahniuk$bahniuk$Models$initialModel = {
 		polygons: {ctor: '[]'},
 		cursor: _ryanbahniuk$bahniuk$Models$initialCursor,
 		interactionCounter: 0,
-		selectedPolygonId: _elm_lang$core$Maybe$Nothing
+		selectedPolygonId: _elm_lang$core$Maybe$Nothing,
+		twitterCoordinates: A2(_ryanbahniuk$bahniuk$Models$Coordinates, 10, 10),
+		githubCoordinates: A2(_ryanbahniuk$bahniuk$Models$Coordinates, 60, 10)
 	};
 	var _ryanbahniuk$bahniuk$Models$Vertex = F3(
 		function (a, b, c) {
@@ -8872,9 +8875,9 @@
 					_1: {ctor: '[]'}
 				});
 		});
-	var _ryanbahniuk$bahniuk$Models$Model = F4(
-		function (a, b, c, d) {
-			return {polygons: a, cursor: b, interactionCounter: c, selectedPolygonId: d};
+	var _ryanbahniuk$bahniuk$Models$Model = F6(
+		function (a, b, c, d, e, f) {
+			return {polygons: a, cursor: b, interactionCounter: c, selectedPolygonId: d, twitterCoordinates: e, githubCoordinates: f};
 		});
 
 	var _ryanbahniuk$bahniuk$Decoders$coordinateDecoder = A3(
@@ -9523,9 +9526,6 @@
 				}),
 			_1: {ctor: '[]'}
 		});
-	var _ryanbahniuk$bahniuk$View$clickAction = function (model) {
-		return _ryanbahniuk$bahniuk$Helpers$noneInFlight(model.polygons) ? _ryanbahniuk$bahniuk$Events$onClick(_ryanbahniuk$bahniuk$Messages$Add) : _ryanbahniuk$bahniuk$Events$onStopPropClick(_ryanbahniuk$bahniuk$Messages$Noop);
-	};
 	var _ryanbahniuk$bahniuk$View$cursorView = function (cursor) {
 		return A2(
 			_elm_lang$svg$Svg$g,
@@ -9607,26 +9607,40 @@
 				}
 			});
 	};
-	var _ryanbahniuk$bahniuk$View$withinRangeY = F2(
-		function (cursor, vertex) {
-			return ((_elm_lang$core$Native_Utils.cmp(cursor.coordinates.y - vertex.coordinates.y, 10) < 1) && (_elm_lang$core$Native_Utils.cmp(cursor.coordinates.y - vertex.coordinates.y, 0) > -1)) || ((_elm_lang$core$Native_Utils.cmp(vertex.coordinates.y - cursor.coordinates.y, 10) < 1) && (_elm_lang$core$Native_Utils.cmp(vertex.coordinates.y - cursor.coordinates.y, 0) > -1));
+	var _ryanbahniuk$bahniuk$View$withinRangeY = F3(
+		function (range, cursor, coordinates) {
+			return ((_elm_lang$core$Native_Utils.cmp(cursor.coordinates.y - coordinates.y, range) < 1) && (_elm_lang$core$Native_Utils.cmp(cursor.coordinates.y - coordinates.y, 0) > -1)) || ((_elm_lang$core$Native_Utils.cmp(coordinates.y - cursor.coordinates.y, range) < 1) && (_elm_lang$core$Native_Utils.cmp(coordinates.y - cursor.coordinates.y, 0) > -1));
 		});
-	var _ryanbahniuk$bahniuk$View$withinRangeX = F2(
-		function (cursor, vertex) {
-			return ((_elm_lang$core$Native_Utils.cmp(cursor.coordinates.x - vertex.coordinates.x, 10) < 1) && (_elm_lang$core$Native_Utils.cmp(cursor.coordinates.x - vertex.coordinates.x, 0) > -1)) || ((_elm_lang$core$Native_Utils.cmp(vertex.coordinates.x - cursor.coordinates.x, 10) < 1) && (_elm_lang$core$Native_Utils.cmp(vertex.coordinates.x - cursor.coordinates.x, 0) > -1));
+	var _ryanbahniuk$bahniuk$View$withinRangeX = F3(
+		function (range, cursor, coordinates) {
+			return ((_elm_lang$core$Native_Utils.cmp(cursor.coordinates.x - coordinates.x, range) < 1) && (_elm_lang$core$Native_Utils.cmp(cursor.coordinates.x - coordinates.x, 0) > -1)) || ((_elm_lang$core$Native_Utils.cmp(coordinates.x - cursor.coordinates.x, range) < 1) && (_elm_lang$core$Native_Utils.cmp(coordinates.x - cursor.coordinates.x, 0) > -1));
 		});
-	var _ryanbahniuk$bahniuk$View$withinRange = F2(
-		function (cursor, vertex) {
-			return A2(_ryanbahniuk$bahniuk$View$withinRangeX, cursor, vertex) && A2(_ryanbahniuk$bahniuk$View$withinRangeY, cursor, vertex);
+	var _ryanbahniuk$bahniuk$View$withinRange = F3(
+		function (range, cursor, coordinates) {
+			return A3(_ryanbahniuk$bahniuk$View$withinRangeX, range, cursor, coordinates) && A3(_ryanbahniuk$bahniuk$View$withinRangeY, range, cursor, coordinates);
 		});
-	var _ryanbahniuk$bahniuk$View$shouldHideCursor = function (model) {
+	var _ryanbahniuk$bahniuk$View$withinRangeVertex = function (model) {
 		return A2(
 			_elm_lang$core$List$any,
-			_ryanbahniuk$bahniuk$View$withinRange(model.cursor),
-			_ryanbahniuk$bahniuk$Helpers$flattenVertices(model.polygons));
+			A2(_ryanbahniuk$bahniuk$View$withinRange, 10, model.cursor),
+			A2(
+				_elm_lang$core$List$map,
+				function (x) {
+					return x.coordinates;
+				},
+				_ryanbahniuk$bahniuk$Helpers$flattenVertices(model.polygons)));
+	};
+	var _ryanbahniuk$bahniuk$View$withinRangeSocial = function (model) {
+		return A3(_ryanbahniuk$bahniuk$View$withinRange, 40, model.cursor, model.twitterCoordinates) || A3(_ryanbahniuk$bahniuk$View$withinRange, 40, model.cursor, model.githubCoordinates);
+	};
+	var _ryanbahniuk$bahniuk$View$shouldHideCursor = function (model) {
+		return _ryanbahniuk$bahniuk$View$withinRangeVertex(model) || _ryanbahniuk$bahniuk$View$withinRangeSocial(model);
 	};
 	var _ryanbahniuk$bahniuk$View$maybeCursorView = function (model) {
 		return _ryanbahniuk$bahniuk$View$shouldHideCursor(model) ? _elm_lang$svg$Svg$text('') : _ryanbahniuk$bahniuk$View$cursorView(model.cursor);
+	};
+	var _ryanbahniuk$bahniuk$View$clickAction = function (model) {
+		return _ryanbahniuk$bahniuk$View$withinRangeSocial(model) ? _ryanbahniuk$bahniuk$Events$onStopPropClick(_ryanbahniuk$bahniuk$Messages$Noop) : (_ryanbahniuk$bahniuk$Helpers$noneInFlight(model.polygons) ? _ryanbahniuk$bahniuk$Events$onClick(_ryanbahniuk$bahniuk$Messages$Add) : _ryanbahniuk$bahniuk$Events$onStopPropClick(_ryanbahniuk$bahniuk$Messages$Noop));
 	};
 	var _ryanbahniuk$bahniuk$View$creditLine = 'this site (and other cool things) can be found on my github';
 	var _ryanbahniuk$bahniuk$View$introTextFourthLine = 'and once upon a time at notre dame.';
@@ -9798,7 +9812,7 @@
 											_0: _elm_lang$svg$Svg_Attributes$x('50%'),
 											_1: {
 												ctor: '::',
-												_0: _elm_lang$svg$Svg_Attributes$y('700'),
+												_0: _elm_lang$svg$Svg_Attributes$y('800'),
 												_1: {
 													ctor: '::',
 													_0: _elm_lang$svg$Svg_Attributes$fill(_ryanbahniuk$bahniuk$Colors$blackHex),
@@ -9823,6 +9837,203 @@
 				}
 			}
 		});
+	var _ryanbahniuk$bahniuk$View$githubPoints = 'M19.9981583,0 C8.95546211,0 0,8.95423432 0,20.0006139 C0,28.8369809 5.73007152,36.3326069 13.6775223,38.9772553 C14.6781669,39.161423 15.042819,38.5438473 15.042819,38.0134442 C15.042819,37.5395193 15.02563,36.2810399 15.0158077,34.6124804 C9.45271494,35.8206206 8.2789527,31.9309985 8.2789527,31.9309985 C7.36916419,29.6203076 6.05789005,29.0051874 6.05789005,29.0051874 C4.24199638,27.7651248 6.19540195,27.7896805 6.19540195,27.7896805 C8.20283004,27.9308757 9.25872495,29.8511311 9.25872495,29.8511311 C11.0426962,32.9070874 13.9402683,32.0243101 15.0796525,31.5123239 C15.2613647,30.2206943 15.7782621,29.3391448 16.349182,28.8394364 C11.9082845,28.3348169 7.239019,26.6183738 7.239019,18.9545413 C7.239019,16.7715399 8.01866233,14.9851131 9.29801406,13.587894 C9.09174622,13.0820467 8.40541453,11.0476074 9.49445962,8.2949139 C9.49445962,8.2949139 11.1728414,7.75714417 14.9937076,10.3453145 C16.5886,9.90085638 18.300132,9.67985512 20.0006139,9.67126063 C21.699868,9.67985512 23.4101722,9.90085638 25.0075202,10.3453145 C28.8259308,7.75714417 30.501857,8.2949139 30.501857,8.2949139 C31.5933577,11.0476074 30.907026,13.0820467 30.7019859,13.587894 C31.9837932,14.9851131 32.7572976,16.7715399 32.7572976,18.9545413 C32.7572976,26.6380184 28.0806655,28.328678 23.6262623,28.8234752 C24.3432886,29.441051 24.9829645,30.661469 24.9829645,32.5277019 C24.9829645,35.2005893 24.9584088,37.3578072 24.9584088,38.0134442 C24.9584088,38.5487584 25.3193775,39.1712453 26.3335277,38.9760275 C34.2748396,36.3252402 40,28.8345253 40,20.0006139 C40,8.95423432 31.0445379,0 19.9981583,0';
+	var _ryanbahniuk$bahniuk$View$twitterPoints = 'M163.4,305.5c88.7,0,137.2-73.5,137.2-137.2c0-2.1,0-4.2-0.1-6.2c9.4-6.8,17.6-15.3,24.1-25c-8.6,3.8-17.9,6.4-27.7,7.6c10-6,17.6-15.4,21.2-26.7c-9.3,5.5-19.6,9.5-30.6,11.7c-8.8-9.4-21.3-15.2-35.2-15.2c-26.6,0-48.2,21.6-48.2,48.2c0,3.8,0.4,7.5,1.3,11c-40.1-2-75.6-21.2-99.4-50.4c-4.1,7.1-6.5,15.4-6.5,24.2c0,16.7,8.5,31.5,21.5,40.1c-7.9-0.2-15.3-2.4-21.8-6c0,0.2,0,0.4,0,0.6c0,23.4,16.6,42.8,38.7,47.3c-4,1.1-8.3,1.7-12.7,1.7c-3.1,0-6.1-0.3-9.1-0.9c6.1,19.2,23.9,33.1,45,33.5c-16.5,12.9-37.3,20.6-59.9,20.6c-3.9,0-7.7-0.2-11.5-0.7C110.8,297.5,136.2,305.5,163.4,305.5';
+	var _ryanbahniuk$bahniuk$View$href = _elm_lang$virtual_dom$VirtualDom$attribute('href');
+	var _ryanbahniuk$bahniuk$View$github = function (coordinates) {
+		return A2(
+			_elm_lang$svg$Svg$a,
+			{
+				ctor: '::',
+				_0: _elm_lang$svg$Svg_Attributes$class('social-icon'),
+				_1: {
+					ctor: '::',
+					_0: _ryanbahniuk$bahniuk$View$href('https://github.com/ryanbahniuk'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$target('_blank'),
+						_1: {ctor: '[]'}
+					}
+				}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$svg$Svg$svg,
+					{
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$x(
+							_elm_lang$core$Basics$toString(coordinates.x)),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$y(
+								_elm_lang$core$Basics$toString(coordinates.y)),
+							_1: {ctor: '[]'}
+						}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$svg$Svg$g,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: A2(
+									_elm_lang$svg$Svg$circle,
+									{
+										ctor: '::',
+										_0: _elm_lang$svg$Svg_Attributes$transform('scale(0.1)'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$svg$Svg_Attributes$fill(_ryanbahniuk$bahniuk$Colors$whiteHex),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$svg$Svg_Attributes$cx('200'),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$svg$Svg_Attributes$cy('200'),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$svg$Svg_Attributes$r('200'),
+														_1: {ctor: '[]'}
+													}
+												}
+											}
+										}
+									},
+									{ctor: '[]'}),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$svg$Svg$g,
+								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: A2(
+										_elm_lang$svg$Svg$path,
+										{
+											ctor: '::',
+											_0: _elm_lang$svg$Svg_Attributes$d(_ryanbahniuk$bahniuk$View$githubPoints),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$svg$Svg_Attributes$stroke('none'),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$svg$Svg_Attributes$fill(_ryanbahniuk$bahniuk$Colors$lightGreyHex),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$svg$Svg_Attributes$fillRule('evenodd'),
+														_1: {ctor: '[]'}
+													}
+												}
+											}
+										},
+										{ctor: '[]'}),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {ctor: '[]'}
+			});
+	};
+	var _ryanbahniuk$bahniuk$View$twitter = function (coordinates) {
+		return A2(
+			_elm_lang$svg$Svg$a,
+			{
+				ctor: '::',
+				_0: _elm_lang$svg$Svg_Attributes$class('social-icon'),
+				_1: {
+					ctor: '::',
+					_0: _ryanbahniuk$bahniuk$View$href('https://twitter.com/ryanbahniuk'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$target('_blank'),
+						_1: {ctor: '[]'}
+					}
+				}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$svg$Svg$svg,
+					{
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$x(
+							_elm_lang$core$Basics$toString(coordinates.x)),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$y(
+								_elm_lang$core$Basics$toString(coordinates.y)),
+							_1: {ctor: '[]'}
+						}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$svg$Svg$g,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: A2(
+									_elm_lang$svg$Svg$circle,
+									{
+										ctor: '::',
+										_0: _elm_lang$svg$Svg_Attributes$transform('scale(0.1)'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$svg$Svg_Attributes$fill(_ryanbahniuk$bahniuk$Colors$lightGreyHex),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$svg$Svg_Attributes$cx('200'),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$svg$Svg_Attributes$cy('200'),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$svg$Svg_Attributes$r('200'),
+														_1: {ctor: '[]'}
+													}
+												}
+											}
+										}
+									},
+									{ctor: '[]'}),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$svg$Svg$g,
+								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: A2(
+										_elm_lang$svg$Svg$path,
+										{
+											ctor: '::',
+											_0: _elm_lang$svg$Svg_Attributes$transform('scale(0.1)'),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$svg$Svg_Attributes$fill(_ryanbahniuk$bahniuk$Colors$whiteHex),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$svg$Svg_Attributes$d(_ryanbahniuk$bahniuk$View$twitterPoints),
+													_1: {ctor: '[]'}
+												}
+											}
+										},
+										{ctor: '[]'}),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {ctor: '[]'}
+			});
+	};
 	var _ryanbahniuk$bahniuk$View$view = function (model) {
 		return A2(
 			_elm_lang$svg$Svg$svg,
@@ -9868,7 +10079,15 @@
 							_1: {
 								ctor: '::',
 								_0: _ryanbahniuk$bahniuk$View$maskText,
-								_1: {ctor: '[]'}
+								_1: {
+									ctor: '::',
+									_0: _ryanbahniuk$bahniuk$View$twitter(model.twitterCoordinates),
+									_1: {
+										ctor: '::',
+										_0: _ryanbahniuk$bahniuk$View$github(model.githubCoordinates),
+										_1: {ctor: '[]'}
+									}
+								}
 							}
 						}
 					}

@@ -25,11 +25,13 @@ type alias Model =
   , cursor : Cursor
   , interactionCounter : Int
   , selectedPolygonId : Maybe Int
+  , twitterCoordinates : Coordinates
+  , githubCoordinates : Coordinates
   }
 
 initialCursor : Cursor
 initialCursor =
-  Cursor (Coordinates 0 0)
+  Cursor (Coordinates -50 -50)
 
 initialModel : Model
 initialModel =
@@ -37,6 +39,8 @@ initialModel =
   , cursor = initialCursor
   , interactionCounter = 0
   , selectedPolygonId = Nothing
+  , twitterCoordinates = (Coordinates 10 10)
+  , githubCoordinates = (Coordinates 60 10)
   }
 
 initialPolygon : Int -> Coordinates -> Polygon
